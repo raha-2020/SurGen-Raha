@@ -1,0 +1,26 @@
+{
+  "stage2_model": "lightgbm",
+  "stage2_feature_columns": [
+    "prob_MMR_LOSS",
+    "prob_KRAS_M",
+    "prob_NRAS_M",
+    "prob_BRAF_M"
+  ],
+  "stage2_prob_only": true,
+  "stage2_emb_only": false,
+  "lgbm_best_iteration": 80,
+  "stage2_val_auroc": 0.7238993710691823,
+  "stage2_test_auroc": 0.5651455026455027,
+  "stage2_test_metrics": {
+    "auroc": 0.5651455026455027,
+    "accuracy": 0.5853658536585366,
+    "precision_death": 0.4117647058823529,
+    "recall_death": 0.5
+  },
+  "stage1_test_auroc_per_task": {
+    "MMR_LOSS": 0.8289473684210527,
+    "KRAS_M": 0.6942094990240728,
+    "NRAS_M": 0.20625000000000004,
+    "BRAF_M": 0.7618243243243243
+  }
+}
