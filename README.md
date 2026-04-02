@@ -1,4 +1,4 @@
-# Full pipeline: Stage 1 (multi-task biomarkers) → Stage 2 (5y survival)
+# Stage 1 (multi-task biomarkers) → Stage 2 (5y survival)
 
 This file walks through training, evaluation exports, survival modelling, and final metrics for SR386.
 
