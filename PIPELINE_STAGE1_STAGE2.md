@@ -1,44 +1,22 @@
 # Full pipeline: Stage 1 (multi-task biomarkers) → Stage 2 (5y survival)
 
-This document walks through training, evaluation exports, survival modelling, and final metrics for **SR386** using the scripts in this folder.
-
-**Prerequisites**
-
-- Python env with `requirements.txt` installed (PyTorch, pandas, scikit-learn, zarr, tqdm, etc.).
-- UNI (or other) **Zarr** features: one folder per split **or** one tree with `train` / `val` / `test` subfolders — see below.
-- Working directory for commands: `SurGen-Dataset-main/reproducibility/`.
+This file walks through training, evaluation exports, survival modelling, and final metrics for SR386.
 
 ---
-
 ## Paths you must set
 
 | Variable | Meaning |
 |----------|--------|
-| `TRAIN_ZARR` | Directory containing `SR386_*.zarr` for **training** slides (must match `dataset_csv` train `case_id`s). |
-| `VAL_ZARR` | Same for **validation** slides. |
-| `TEST_ZARR` | Same for **test** slides (only for **final** eval — not used during Stage 1 training). |
-| `CSV_DIR` | Usually `./dataset_csv` (contains `SR386_*` CSVs). |
+| `TRAIN_ZARR` | Directory containing `SR386_*.zarr` for training slides (must match `dataset_csv` train `case_id`s). |
+| `VAL_ZARR` | Same for validation slides. |
+| `TEST_ZARR` | Same for test slides (only for final eval — not used during Stage 1 training). |
+| `CSV_DIR` |`./dataset_csv` (contains `SR386_*` CSVs). |
 
-If all Zarr files live in **one** directory (flat: `case_id.zarr`), use the **same** path for train/val/test exports and `--flat_fv_path`. If you mirror the paper’s split folders, point each eval at the right subfolder.
-
----
-
-### Subset of biomarkers (optional)
-
-Train only some tasks, e.g. **MMR + KRAS** (exclude NRAS and BRAF):
-
-```bash
-python biomarker_multitask_main.py ... \
-  --tasks "MMR_LOSS,KRAS_M"
-```
-
-Eval exports read `stage1_tasks` from the checkpoint automatically. Stage 2 uses whatever `prob_*` columns appear in the train probs CSV.
-
+If all Zarr files are in one directory (flat: `case_id.zarr`), use the same path for train/val/test exports and `--flat_fv_path`. If you mirror the paper’s split folders, point each eval at the right subfolder.
 ---
 
 ## Step 1 — Train Stage 1 and keep `best_multitask_*.pth`
 
-From `reproducibility/`:
 
 ```bash
 python biomarker_multitask_main.py \
@@ -55,31 +33,13 @@ python biomarker_multitask_main.py \
 ```
 
 - Checkpoints are saved under:  
-  `results_multitask_biomarkers/SR386/MULTITASK_BIOMARKERS/uni/<run_id>/best_multitask_epoch_*_auroc_*.pth`
-- Note the **full path** to the best checkpoint for the next steps.
-
-**Optional:** `bash run_biomarker_multitask_example.sh` after editing paths inside the script.
-
+  `results_multitask_biomarkers/SR386/MULTITASK_BIOMARKERS/uni/<run_id>/best_multitask_epoch_*_auroc_*.pth` 
+  (Not included here)
 ---
 
 ## Step 2 — Run `biomarker_multitask_eval.py` for train / validate / test
 
-For **each** split, point `--fv_path` at the directory that actually contains the Zarrs for slides in that split.
-
-### Option A — helper script (three runs)
-
-```bash
-export CHECKPOINT="/path/to/best_multitask_epoch_X_auroc_Y.pth"
-export FV_PATH="/path/to/zarr_root"   # same root if flat layout for all splits
-export CSV_DIR="./dataset_csv"
-export OUT_DIR="./exports/stage1_probs"
-chmod +x export_stage1_all_splits.sh
-bash export_stage1_all_splits.sh
-```
-
-If **train/val/test Zarrs live in different folders**, run `biomarker_multitask_eval.py` three times manually with different `--fv_path` per split (see Option B).
-
-### Option B — manual commands
+For each split, point `--fv_path` at the directory that actually contains the Zarrs for slides in that split.
 
 ```bash
 CKPT="/path/to/best_multitask_....pth"
@@ -104,7 +64,7 @@ Outputs are CSVs with `case_id`, `prob_MMR_LOSS`, `prob_KRAS_M`, `prob_NRAS_M`, 
 
 ### Slide embeddings for Stage 2 (recommended)
 
-Using **probabilities alone** in Stage 2 drops most **morphologic** signal (only four numbers per slide). To match the **embedding + probabilities** design, export the **pooled Transformer slide vector** (`d_model` = 512) as `emb_0` … `emb_511`:
+Using probabilities alone in Stage 2 drops most morphologic signal (only four numbers per slide). To match the embedding + probabilities design, export the pooled Transformer slide vector (`d_model` = 512) as `emb_0` … `emb_511`:
 
 ```bash
 python biomarker_multitask_eval.py ... --export_embeddings --out_csv ./exports/stage1_probs_train.csv
@@ -112,7 +72,7 @@ python biomarker_multitask_eval.py ... --export_embeddings --out_csv ./exports/s
 
 Or set `export EXPORT_EMBEDDINGS=1` before `bash export_stage1_all_splits.sh`.
 
-**Stage 2** (`survival_stage2_main.py`) automatically uses **`emb_*` + `prob_*`** when both are present. Use **`--prob_only`** to force probabilities alone (ablation). Use **`--emb_only`** for embedding-only.
+Stage 2 (`survival_stage2_main.py`) automatically uses `emb_*` + `prob_*` when both are present. Use `--prob_only` to force probabilities alone (ablation). Use `--emb_only` for embedding-only.
 
 ---
 
@@ -135,5 +95,4 @@ python survival_stage2_main.py \
   --report_stage1_test_auroc \
   --out_metrics_json ./exports/final_metrics.json
 ```
-
 
