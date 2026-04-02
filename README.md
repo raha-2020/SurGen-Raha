@@ -68,8 +68,6 @@ Using probabilities alone in Stage 2 drops most morphologic signal (only four nu
 python biomarker_multitask_eval.py ... --export_embeddings --out_csv ./exports/stage1_probs_train.csv
 ```
 
-Or set `export EXPORT_EMBEDDINGS=1` before `bash export_stage1_all_splits.sh`.
-
 Stage 2 (`survival_stage2_main.py`) automatically uses `emb_*` + `prob_*` when both are present. Use `--prob_only` to force probabilities alone (ablation). Use `--emb_only` for embedding-only.
 
 ---
