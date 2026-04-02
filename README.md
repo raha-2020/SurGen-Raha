@@ -11,8 +11,6 @@ This file walks through training, evaluation exports, survival modelling, and fi
 | `VAL_ZARR` | Same for validation slides. |
 | `TEST_ZARR` | Same for test slides (only for final eval — not used during Stage 1 training). |
 | `CSV_DIR` |`./dataset_csv` (contains `SR386_*` CSVs). |
-
-If all Zarr files are in one directory (flat: `case_id.zarr`), use the same path for train/val/test exports and `--flat_fv_path`. If you mirror the paper’s split folders, point each eval at the right subfolder.
 ---
 
 ## Step 1 — Train Stage 1 and keep `best_multitask_*.pth`
