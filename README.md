@@ -68,7 +68,7 @@ Using probabilities alone in Stage 2 drops most morphologic signal (only four nu
 python biomarker_multitask_eval.py ... --export_embeddings --out_csv ./exports/stage1_probs_train.csv
 ```
 
-Stage 2 (`survival_stage2_lightgbm.py`) automatically uses `emb_*` + `prob_*` when both are present. Use `--prob_only` to force probabilities alone (ablation). Use `--emb_only` for embedding-only.
+In the Stage 2 (`survival_stage2_lightgbm.py`) automatically uses `emb_*` + `prob_*` when both are present. Use `--prob_only` to force probabilities alone (ablation). Use `--emb_only` for embedding-only.
 
 ---
 
@@ -91,4 +91,4 @@ python survival_stage2_lightgbm.py \
   --report_stage1_test_auroc \
   --out_metrics_json ./exports/final_metrics.json
 ```
-
+For (`survival_stage2_lightgbm.py`) it automatically uses `emb_*` + `prob_*` when both are present. Use `--prob_only` to force probabilities alone (ablation). Use `--emb_only` for embedding-only.
