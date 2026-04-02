@@ -68,7 +68,7 @@ Using probabilities alone in Stage 2 drops most morphologic signal (only four nu
 python biomarker_multitask_eval.py ... --export_embeddings --out_csv ./exports/stage1_probs_train.csv
 ```
 
-Stage 2 (`survival_stage2_main.py`) automatically uses `emb_*` + `prob_*` when both are present. Use `--prob_only` to force probabilities alone (ablation). Use `--emb_only` for embedding-only.
+Stage 2 (`survival_stage2_lightgbm.py`) automatically uses `emb_*` + `prob_*` when both are present. Use `--prob_only` to force probabilities alone (ablation). Use `--emb_only` for embedding-only.
 
 ---
 
@@ -81,7 +81,7 @@ Merging on `case_id` is done inside `survival_stage2_main.py` (inner join betwee
 ## Step 4 — Train + validate Stage 2; one final test evaluation
 
 ```bash
-python survival_stage2_main.py \
+python survival_stage2_lightgbm.py \
   --train_probs_csv ./exports/stage1_probs/stage1_probs_train.csv \
   --val_probs_csv ./exports/stage1_probs/stage1_probs_validate.csv \
   --test_probs_csv ./exports/stage1_probs/stage1_probs_test.csv \
